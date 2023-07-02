@@ -22,6 +22,12 @@ if not floppy or not peripheral.getType(floppy) == "drive" then
   return
 end
 
+local floppyFolder = "disk"
+if not fs.exists(floppyFolder) or not fs.isDir(floppyFolder) then
+  print("Floppy disk not found.")
+  return
+end
+
 while true do
   if isFloppyFull(floppy) then
     print("Floppy disk is full. Please insert a new floppy disk.")
@@ -35,7 +41,7 @@ while true do
   for _, file in ipairs(files) do
     local filePath = fs.combine("/", file)
     if fs.isFile(filePath) then
-      copyFileToFloppy(filePath, floppy)
+      copyFileToFloppy(filePath, floppyFolder)
       print("Copied file: " .. filePath)
     end
   end
