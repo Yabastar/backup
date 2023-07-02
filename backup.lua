@@ -1,48 +1,34 @@
 -- Function to check if a floppy disk is full
-local function isFloppyFull(floppy)
-  local diskLabel = fs.getDiskLabel(floppy)
-  if diskLabel then
-    local freeSpace = fs.getFreeSpace(diskLabel)
-    return freeSpace == 0
+local function isFloppyFull()
+  if disk.isPresent("top") then
+    return not disk.hasData("top")
   end
   return false
 end
 
 -- Function to copy a file from the computer to the floppy disk
-local function copyFileToFloppy(filePath, floppy)
+local function copyFileToFloppy(filePath)
   local fileName = fs.getName(filePath)
-  local floppyPath = fs.combine(floppy, fileName)
+  local floppyPath = fs.combine("disk", fileName)
   fs.copy(filePath, floppyPath)
 end
 
 -- Main program
-local floppy = peripheral.find("drive")
-if not floppy or not peripheral.getType(floppy) == "drive" then
-  print("No floppy disk drive found.")
-  return
-end
-
-local floppyFolder = "disk"
-if not fs.exists(floppyFolder) or not fs.isDir(floppyFolder) then
-  print("Floppy disk not found.")
-  return
-end
-
 while true do
-  if isFloppyFull(floppy) then
+  if isFloppyFull() then
     print("Floppy disk is full. Please insert a new floppy disk.")
     repeat
       os.pullEvent("peripheral")
-      floppy = peripheral.find("drive")
-    until floppy and peripheral.getType(floppy) == "drive"
+    until disk.isPresent("top") and disk.hasData("top")
   end
 
   local files = fs.list("/")
   for _, file in ipairs(files) do
     local filePath = fs.combine("/", file)
     if fs.isFile(filePath) then
-      copyFileToFloppy(filePath, floppyFolder)
+      copyFileToFloppy(filePath)
       print("Copied file: " .. filePath)
     end
   end
 end
+
