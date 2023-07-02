@@ -6,10 +6,18 @@ local function isFloppyFull()
   return false
 end
 
+-- Function to generate a unique filename using a timestamp
+local function generateUniqueFilename(filePath)
+  local timestamp = os.time()
+  local fileName = fs.getName(filePath)
+  local extension = fs.getExtension(filePath)
+  return fileName .. "_" .. timestamp .. "." .. extension
+end
+
 -- Function to copy a file from the computer to the floppy disk
 local function copyFileToFloppy(filePath)
-  local fileName = fs.getName(filePath)
-  local floppyPath = fs.combine("disk", fileName)
+  local uniqueFilename = generateUniqueFilename(filePath)
+  local floppyPath = fs.combine("disk", uniqueFilename)
   fs.copy(filePath, floppyPath)
 end
 
