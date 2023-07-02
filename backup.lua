@@ -25,10 +25,9 @@ while true do
   local files = fs.list("/")
   for _, file in ipairs(files) do
     local filePath = fs.combine("/", file)
-    if fs.isFile(filePath) then
+    if not fs.isDir(filePath) then
       copyFileToFloppy(filePath)
       print("Copied file: " .. filePath)
     end
   end
 end
-
